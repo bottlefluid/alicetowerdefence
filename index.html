@@ -21,7 +21,7 @@ body{background:linear-gradient(160deg,#0a0000,#150000,#0a0000);font-family:'Nun
 #canvasWrap{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 0 45px #ff220030,0 0 90px #aa000018,0 4px 30px #0008;border:2px solid #660000}
 #gameCanvas{display:block;cursor:crosshair}
 #sidebar{width:210px;display:flex;flex-direction:column;gap:7px}
-#shop{background:linear-gradient(160deg,#1a0000,#110000);border:1px solid #550000;border-radius:12px;padding:9px}
+#shop{background:linear-gradient(160deg,#1a0000,#110000);border:1px solid #550000;border-radius:12px;padding:9px;overflow-y:auto;max-height:340px}
 #shop h3{font-family:'Fredoka One',cursive;color:#ff2200;text-align:center;font-size:15px;margin-bottom:7px;letter-spacing:1px;text-shadow:0 0 12px #ff220050}
 .tbtn{display:flex;align-items:center;gap:7px;width:100%;padding:6px 8px;margin-bottom:3px;background:#1e0000;border:2px solid transparent;border-radius:9px;color:#fff;cursor:pointer;font-family:'Nunito',sans-serif;font-size:11px;transition:all .15s;text-align:left}
 .tbtn:hover{background:#330000;border-color:#ff2200}
@@ -112,7 +112,7 @@ body{background:linear-gradient(160deg,#0a0000,#150000,#0a0000);font-family:'Nun
       <button id="waveBtn" onclick="startWave()">⚔️ Start Wave 1</button>
       <button id="spdBtn" onclick="toggleSpeed()">💨 Speed: 1×</button>
       <button id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
-      <div id="helpText">Click grass to place tower<br>Right-click to cancel</div>
+      <div id="helpText">Click grass to place tower<br>Right-click to cancel<br><b style="color:#cc6655">E</b> upgrade · <b style="color:#cc6655">X</b> sell selected</div>
     </div>
     <button id="adminBtn" onclick="toggleAdmin()">🔧 Admin</button>
     <div id="adminPanel">
@@ -132,14 +132,24 @@ function onPath(x,y,margin){for(let i=1;i<RP.length;i++){const a=RP[i-1],b=RP[i]
 
 // ── TOWER DEFS ─────────────────────────────────────────
 const TD={
-  dart:  {name:'Dart Alice',  emoji:'🗡️',cost:175, color:'#cc2200',range:130,cd:55, dmg:1,spd:8, pierce:1, special:'Homing daggers'},
-  tack:  {name:'Tack Alice',  emoji:'🩸',cost:230, color:'#cc5500',range:80, cd:36, dmg:1,spd:7, pierce:1, special:'8-direction burst'},
-  ice:   {name:'Ice Alice',   emoji:'❄️',cost:320, color:'#4488cc',range:110,cd:110,dmg:0,spd:0, pierce:99,special:'Freeze aura'},
-  bomb:  {name:'Bomb Alice',  emoji:'💣',cost:525, color:'#882200',range:135,cd:72, dmg:2,spd:6, pierce:99,special:'Explosive AoE'},
-  sniper:{name:'Sniper Alice',emoji:'🎯',cost:35000, color:'#445522',range:600,cd:115,dmg:350,spd:26,pierce:4, special:'Long-range pierce'},
-  dark:  {name:'Dark Alice',  emoji:'🌑',cost:625, color:'#440011',range:120,cd:44, dmg:2,spd:9, pierce:1, special:'Shadow slow aura'},
-  super: {name:'Super Alice', emoji:'⚡',cost:240000,color:'#cc8800',range:150,cd:5,  dmg:1000,spd:16,pierce:1, special:'Rapid fire'},
-  ninja: {name:'Ninja Alice', emoji:'🥷',cost:375, color:'#222222',range:130,cd:28, dmg:1,spd:12,pierce:2, special:'Triple shuriken'},
+  dart:   {name:'Dart Alice',    emoji:'🗡️', cost:175,  color:'#cc2200',range:130,cd:55, dmg:1,spd:8, pierce:1, special:'Homing daggers'},
+  tack:   {name:'Tack Alice',    emoji:'🩸', cost:230,  color:'#cc5500',range:80, cd:36, dmg:1,spd:7, pierce:1, special:'8-direction burst'},
+  ice:    {name:'Ice Alice',     emoji:'❄️', cost:320,  color:'#4488cc',range:110,cd:110,dmg:0,spd:0, pierce:99,special:'Freeze aura'},
+  bomb:   {name:'Bomb Alice',    emoji:'💣', cost:525,  color:'#882200',range:135,cd:72, dmg:2,spd:6, pierce:99,special:'Explosive AoE'},
+  sniper: {name:'Sniper Alice',  emoji:'🎯', cost:350,  color:'#445522',range:600,cd:115,dmg:3,spd:26,pierce:4, special:'Long-range pierce'},
+  dark:   {name:'Dark Alice',    emoji:'🌑', cost:625,  color:'#440011',range:120,cd:44, dmg:2,spd:9, pierce:1, special:'Shadow slow aura'},
+  super:  {name:'Super Alice',   emoji:'⚡', cost:2400, color:'#cc8800',range:150,cd:5,  dmg:1,spd:16,pierce:1, special:'Rapid fire'},
+  ninja:  {name:'Ninja Alice',   emoji:'🥷', cost:375,  color:'#222222',range:130,cd:28, dmg:1,spd:12,pierce:2, special:'Triple shuriken'},
+  cannon: {name:'Cannon Alice',  emoji:'💥', cost:475,  color:'#7a3e00',range:300,cd:88, dmg:3,spd:5, pierce:99,special:'Mortar shell AoE'},
+  wizard: {name:'Wizard Alice',  emoji:'🔮', cost:450,  color:'#8e44ad',range:140,cd:50, dmg:2,spd:10,pierce:3, special:'Magic bolts, pops Lead'},
+  druid:  {name:'Druid Alice',   emoji:'🌿', cost:425,  color:'#27ae60',range:120,cd:65, dmg:2,spd:0, pierce:5, special:'Chain lightning'},
+  boomer: {name:'Boomer Alice',  emoji:'🌀', cost:325,  color:'#d35400',range:125,cd:45, dmg:1,spd:11,pierce:8, special:'Piercing boomerang'},
+  glue:   {name:'Glue Alice',    emoji:'🫧', cost:280,  color:'#d4a017',range:110,cd:60, dmg:0,spd:7, pierce:1, special:'Heavy glue slow'},
+  village:{name:'Village Alice', emoji:'🏚️', cost:1200, color:'#c0392b',range:160,cd:9999,dmg:0,spd:0,pierce:0, special:'Buffs nearby towers'},
+  spike:  {name:'Spike Alice',   emoji:'⚙️', cost:300,  color:'#7f8c8d',range:0,  cd:120,dmg:2,spd:0, pierce:4, special:'Drops spike piles'},
+  alch:   {name:'Alch Alice',    emoji:'⚗️', cost:550,  color:'#16a085',range:120,cd:55, dmg:1,spd:8, pierce:1, special:'Acid DoT on hit'},
+  heli:   {name:'Heli Alice',    emoji:'🚁', cost:1600, color:'#2980b9',range:200,cd:12, dmg:1,spd:14,pierce:1, special:'Rapid aerial fire'},
+  engi:   {name:'Engi Alice',    emoji:'🔩', cost:400,  color:'#7d8b8c',range:130,cd:22, dmg:1,spd:13,pierce:1, special:'Rapid nail gun'},
 };
 const TKEYS=Object.keys(TD);
 
@@ -182,11 +192,13 @@ const WAVES=[
 ];
 
 // ── GAME STATE ─────────────────────────────────────────
-let G={money:200,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+let G={money:200,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
 let mousePos=null;
 
 function tStats(t){const d=TD[t.type],lm=t.level===1?1:t.level===2?1.6:2.8;
-  return{range:Math.floor(d.range*(1+(t.level-1)*0.22)),dmg:Math.max(1,Math.floor(d.dmg*lm)),cd:Math.max(3,Math.floor(d.cd/(1+(t.level-1)*0.3))),pierce:d.pierce+(t.level-1),spd:d.spd}}
+  const vb=(G.villageBoosted&&G.villageBoosted.has(t.id))?1.15:1;
+  const baseDmg=Math.floor(d.dmg*lm);
+  return{range:Math.floor(d.range*(1+(t.level-1)*0.22)*vb),dmg:d.dmg===0?0:Math.max(1,baseDmg),cd:Math.max(3,Math.floor(d.cd/(1+(t.level-1)*0.3))),pierce:d.pierce+(t.level-1),spd:d.spd}}
 
 // ── PLACE TOWER ────────────────────────────────────────
 function placeTower(type,x,y){
@@ -217,7 +229,7 @@ function spawnBloon(type,offset=0){
   const d=BD[type],p=posAt(offset);
   const hpMult=Math.pow(1.1,G.wave-1);
   const scaledHp=Math.max(1,Math.ceil(d.hp*hpMult));
-  G.bloons.push({id:G.bid++,type,hp:scaledHp,maxHp:scaledHp,dist:offset,spd:d.spd,x:p.x,y:p.y,frozen:0,slowed:0,alive:true});
+  G.bloons.push({id:G.bid++,type,hp:scaledHp,maxHp:scaledHp,dist:offset,spd:d.spd,x:p.x,y:p.y,frozen:0,slowed:0,dot:0,dotDmg:0,alive:true});
 }
 function damageBloon(b,dmg,explosive=false,magic=false){
   if(!b.alive)return;
@@ -234,10 +246,35 @@ function popBloon(b){
 // ── PROJECTILE ─────────────────────────────────────────
 function fire(tower,target){
   const d=TD[tower.type],st=tStats(tower);
-  const base={id:G.nid++,tt:tower.type,lvl:tower.level,x:tower.x,y:tower.y,dmg:st.dmg,pierce:st.pierce,pierced:0,range:st.range,dist:0,alive:true};
-  if(tower.type==='tack'){for(let i=0;i<8;i++){const a=(Math.PI*2/8)*i;G.projs.push({...base,vx:Math.cos(a)*st.spd,vy:Math.sin(a)*st.spd,track:false,trg:null,expl:false,er:0,slows:false})}}
-  else if(tower.type==='ninja'){const ba=Math.atan2(target.y-tower.y,target.x-tower.x);const cnt=tower.level>=2?3:1;for(let i=0;i<cnt;i++){const a=ba+(cnt===3?(i-1)*0.22:0);G.projs.push({...base,vx:Math.cos(a)*st.spd,vy:Math.sin(a)*st.spd,track:false,trg:null,expl:false,er:0,slows:false})}}
-  else{const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);const expl=tower.type==='bomb',track=tower.type==='dart'||tower.type==='dark'||tower.type==='super';G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track,trg:track?target:null,expl,er:expl?(38+tower.level*10):0,slows:tower.type==='dark'})}
+  const base={id:G.nid++,tt:tower.type,lvl:tower.level,x:tower.x,y:tower.y,dmg:st.dmg,pierce:st.pierce,pierced:0,range:st.range,dist:0,alive:true,glue:false,acid:false,magic:false};
+  if(tower.type==='tack'){
+    for(let i=0;i<8;i++){const a=(Math.PI*2/8)*i;G.projs.push({...base,vx:Math.cos(a)*st.spd,vy:Math.sin(a)*st.spd,track:false,trg:null,expl:false,er:0,slows:false})}
+  }else if(tower.type==='ninja'){
+    const ba=Math.atan2(target.y-tower.y,target.x-tower.x);const cnt=tower.level>=2?3:1;
+    for(let i=0;i<cnt;i++){const a=ba+(cnt===3?(i-1)*0.22:0);G.projs.push({...base,vx:Math.cos(a)*st.spd,vy:Math.sin(a)*st.spd,track:false,trg:null,expl:false,er:0,slows:false})}
+  }else if(tower.type==='cannon'){
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    const er=48+tower.level*15;
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:false,trg:null,expl:true,er,slows:false,mortar:true});
+  }else if(tower.type==='wizard'){
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:true,trg:target,expl:false,er:0,slows:false,magic:true});
+  }else if(tower.type==='boomer'){
+    const ba=Math.atan2(target.y-tower.y,target.x-tower.x);
+    const cnt=tower.level>=3?2:1;
+    for(let i=0;i<cnt;i++){const a=ba+(cnt===2?(i-0.5)*0.3:0);G.projs.push({...base,vx:Math.cos(a)*st.spd,vy:Math.sin(a)*st.spd,track:false,trg:null,expl:false,er:0,slows:false})}
+  }else if(tower.type==='glue'){
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    G.projs.push({...base,dmg:0,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:false,trg:null,expl:false,er:0,slows:false,glue:true});
+  }else if(tower.type==='alch'){
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:false,trg:null,expl:false,er:0,slows:false,acid:true});
+  }else{
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    const expl=tower.type==='bomb';
+    const track=['dart','dark','super','heli','engi'].includes(tower.type);
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track,trg:track?target:null,expl,er:expl?(38+tower.level*10):0,slows:tower.type==='dark'});
+  }
 }
 function explode(p){for(let i=0;i<22;i++)addPart(p.x,p.y,'#e67e22');addPart(p.x,p.y,'#f1c40f');for(const b of G.bloons){if(!b.alive)continue;if(Math.hypot(b.x-p.x,b.y-p.y)<=p.er)damageBloon(b,p.dmg,true)}}
 
@@ -311,13 +348,66 @@ function tick(){
       b.dist+=eff;if(b.frozen>0)b.frozen--;if(b.slowed>0)b.slowed--;
       if(b.dist>=TPL){b.alive=false;const dmg=BD[b.type].big?10:1;G.lives=Math.max(0,G.lives-dmg);updateUI();if(G.lives<=0){G.status='gameover';showEnd('💀 GAME OVER','You reached wave '+G.wave+'. Score: '+G.score,'#ff2200');return}continue}
       const p=posAt(b.dist);b.x=p.x;b.y=p.y;
+      if(b.dot>0){b.dot--;if(b.dot%20===0)damageBloon(b,b.dotDmg,false,true)}
     }
     G.bloons=G.bloons.filter(b=>b.alive);
-    // Tower AI
+    // Spike collisions
+    for(const sp of G.spikes){
+      if(sp.life<=0||sp.pierce<=0)continue;sp.life--;
+      for(const b of G.bloons){
+        if(!b.alive)continue;
+        if(Math.hypot(b.x-sp.x,b.y-sp.y)<15){damageBloon(b,sp.dmg,false,false);sp.pierce--;addPart(sp.x,sp.y,'#aaa');if(sp.pierce<=0)break;}
+      }
+    }
+    G.spikes=G.spikes.filter(s=>s.life>0&&s.pierce>0);
+    // Tower AI — village boost pass
+    G.villageBoosted=new Set();
+    for(const tower of G.towers){
+      if(tower.type==='village'){
+        const vr=TD.village.range*(1+(tower.level-1)*0.22);
+        for(const ot of G.towers){if(ot!==tower&&Math.hypot(ot.x-tower.x,ot.y-tower.y)<=vr)G.villageBoosted.add(ot.id)}
+      }
+    }
     for(const tower of G.towers){
       const st=tStats(tower);tower.cd=Math.max(0,tower.cd-1);
+      // Village: passive only
+      if(tower.type==='village')continue;
+      // Spike factory: drop piles on path
+      if(tower.type==='spike'){
+        if(tower.cd===0){
+          let cp=null,cd2=Infinity;
+          for(let i=0;i<PP.length;i+=6){const pp=PP[i];const d2=Math.hypot(pp.x-tower.x,pp.y-tower.y);if(d2<cd2){cd2=d2;cp=pp}}
+          if(cp)G.spikes.push({x:cp.x,y:cp.y,dmg:st.dmg,pierce:st.pierce+(tower.level-1)*3,life:800+tower.level*250});
+          tower.cd=st.cd;
+        }
+        continue;
+      }
+      // Ice: freeze aura
       if(tower.type==='ice'){if(tower.cd===0){let hit=false;for(const b of G.bloons){if(BD[b.type].lead)continue;if(Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range){b.frozen=85+tower.level*20;hit=true}}if(hit){tower.cd=st.cd;for(let i=0;i<14;i++)addPart(tower.x,tower.y,'#74b9ff')}}continue}
+      // Dark: slow aura
       if(tower.type==='dark'){for(const b of G.bloons){if(Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range)b.slowed=6}}
+      // Druid: chain lightning
+      if(tower.type==='druid'){
+        if(tower.cd>0)continue;
+        let best=null,bDist=-1;
+        for(const b of G.bloons){if(Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range&&b.dist>bDist){bDist=b.dist;best=b}}
+        if(!best)continue;
+        tower.angle=Math.atan2(best.y-tower.y,best.x-tower.x);
+        const chainLen=2+tower.level;
+        let tgts=[best];let chk=new Set([best.id]);
+        for(let ci=0;ci<chainLen;ci++){
+          const last=tgts[tgts.length-1];let near=null,nd=999;
+          for(const b of G.bloons){if(!b.alive||chk.has(b.id))continue;const dd=Math.hypot(b.x-last.x,b.y-last.y);if(dd<90+tower.level*22&&dd<nd){nd=dd;near=b}}
+          if(near){tgts.push(near);chk.add(near.id)}
+        }
+        G.lightnings.push({x1:tower.x,y1:tower.y,x2:tgts[0].x,y2:tgts[0].y,life:8});
+        for(let ti=0;ti<tgts.length;ti++){
+          damageBloon(tgts[ti],st.dmg,false,true);
+          for(let pi=0;pi<7;pi++)addPart(tgts[ti].x,tgts[ti].y,'#aaf0ff');
+          if(ti<tgts.length-1)G.lightnings.push({x1:tgts[ti].x,y1:tgts[ti].y,x2:tgts[ti+1].x,y2:tgts[ti+1].y,life:8});
+        }
+        tower.cd=st.cd;continue;
+      }
       if(tower.cd>0)continue;
       let best=null,bDist=-1;
       for(const b of G.bloons){if(Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range&&b.dist>bDist){bDist=b.dist;best=b}}
@@ -335,12 +425,13 @@ function tick(){
         if(!b.alive)continue;
         if(Math.hypot(p.x-b.x,p.y-b.y)<BD[b.type].r+5){
           if(p.expl){explode(p);p.alive=false;break}
-          const magic=(p.tt==='sniper'||p.tt==='dark');
-          if(BD[b.type].lead&&!p.expl&&!magic){p.alive=false;break}
-          damageBloon(b,p.dmg,false,magic);
+          const magic=(p.tt==='sniper'||p.tt==='dark'||p.tt==='wizard'||p.tt==='alch');
+          if(BD[b.type].lead&&!p.expl&&!magic&&!p.glue){p.alive=false;break}
+          if(p.glue){b.slowed=290+p.lvl*70;}
+          else if(p.acid){damageBloon(b,p.dmg,false,true);b.dot=120+p.lvl*40;b.dotDmg=1;}
+          else{damageBloon(b,p.dmg,false,magic);}
           if(p.slows)b.slowed=65;
           addPart(b.x,b.y,BD[b.type].color);
-          if(b.alive===false){const tw=G.towers.find(t=>t.id===undefined);/* track kills */}
           p.pierced++;if(p.pierced>=p.pierce){p.alive=false;break}
         }
       }
@@ -397,12 +488,17 @@ function drawTower(t,alpha=1){
   // Body glow
   if(t.type==='super'){ctx.fillStyle='rgba(241,196,15,0.15)';ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.fill()}
   if(t.type==='dark'){ctx.fillStyle='rgba(108,52,131,0.2)';ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill()}
+  if(t.type==='wizard'){ctx.fillStyle='rgba(142,68,173,0.2)';ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill()}
+  if(t.type==='druid'){ctx.fillStyle='rgba(39,174,96,0.15)';ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.fill()}
+  if(t.type==='heli'){ctx.fillStyle='rgba(41,128,185,0.15)';ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill()}
+  if(t.type==='village'){ctx.fillStyle='rgba(192,57,43,0.2)';ctx.beginPath();ctx.arc(0,0,32,0,Math.PI*2);ctx.fill()}
+  if(t.type==='cannon'){ctx.fillStyle='rgba(122,62,0,0.18)';ctx.beginPath();ctx.arc(0,0,26,0,Math.PI*2);ctx.fill()}
   // Body
   const gr=ctx.createRadialGradient(-5,-5,2,0,0,17);gr.addColorStop(0,lc(d.color,70));gr.addColorStop(1,d.color);
   ctx.fillStyle=gr;ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle=dc(d.color,30);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.stroke();
   // Barrel (directional types)
-  if(t.type!=='ice'&&t.type!=='dark'&&t.type!=='tack'){
+  if(!['ice','dark','tack','village','spike','glue','alch','boomer','druid','cannon'].includes(t.type)){
     ctx.rotate(t.angle);ctx.fillStyle=dc(d.color,50);ctx.fillRect(2,-3,18,6);ctx.fillStyle='#222';ctx.fillRect(16,-2,5,4);
   }
   // Tack: spikes
@@ -411,6 +507,26 @@ function drawTower(t,alpha=1){
   if(t.type==='ice'){ctx.strokeStyle='rgba(116,185,255,0.7)';ctx.lineWidth=2;for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,22);ctx.stroke();ctx.restore()}}
   // Dark: rotating aura
   if(t.type==='dark'){ctx.rotate(Date.now()*.0012);ctx.strokeStyle='rgba(180,100,220,0.4)';ctx.lineWidth=2;for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.beginPath();ctx.arc(14,0,5,0,Math.PI);ctx.stroke()}}
+  // Wizard: orbiting orbs
+  if(t.type==='wizard'){const n=2+t.level;for(let i=0;i<n;i++){const oa=Date.now()*.0025+i*(Math.PI*2/n);ctx.fillStyle='rgba(180,100,255,0.95)';ctx.beginPath();ctx.arc(Math.cos(oa)*22,Math.sin(oa)*22,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,200,255,0.5)';ctx.beginPath();ctx.arc(Math.cos(oa)*22,Math.sin(oa)*22,7,0,Math.PI*2);ctx.fill()}}
+  // Heli: spinning rotor blades
+  if(t.type==='heli'){const ra=Date.now()*.01;for(let i=0;i<2;i++){ctx.save();ctx.rotate(ra+i*Math.PI/2);ctx.strokeStyle='rgba(100,200,255,0.8)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(26,0);ctx.stroke();ctx.restore()}}
+  // Spike: gear teeth
+  if(t.type==='spike'){ctx.strokeStyle='rgba(180,180,180,0.7)';ctx.lineWidth=2.5;for(let i=0;i<8;i++){ctx.save();ctx.rotate(i*Math.PI/4);ctx.beginPath();ctx.moveTo(16,0);ctx.lineTo(23,0);ctx.stroke();ctx.restore()}}
+  // Druid: lightning ring + arcs
+  if(t.type==='druid'){ctx.strokeStyle='rgba(80,255,80,0.45)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,24,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='rgba(200,255,0,0.25)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,27,0,Math.PI*2);ctx.stroke();}
+  // Village: dashed range ring
+  if(t.type==='village'){ctx.strokeStyle='rgba(255,120,120,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.arc(0,0,24,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
+  // Cannon: mortar tube (aim-direction)
+  if(t.type==='cannon'){ctx.rotate(t.angle);ctx.fillStyle='#3a1a00';ctx.fillRect(0,-7,24,14);ctx.fillStyle='#1a1a1a';ctx.fillRect(20,-5,9,10);ctx.fillStyle='#2a2a2a';ctx.fillRect(10,-10,5,6);ctx.fillRect(10,4,5,6);}
+  // Boomer: curved boomerang arm
+  if(t.type==='boomer'){ctx.rotate(t.angle);ctx.strokeStyle='#e67e22';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.arc(8,0,12,-Math.PI*.75,Math.PI*.75);ctx.stroke();ctx.lineCap='butt';}
+  // Alch: floating bubbles
+  if(t.type==='alch'){const at=Date.now();for(let i=0;i<3;i++){const bx=Math.cos(at*.002+i*2.1)*10,by=-18+Math.sin(at*.003+i*2)*4;ctx.fillStyle='rgba(20,200,150,0.85)';ctx.beginPath();ctx.arc(bx,by,3,0,Math.PI*2);ctx.fill();}}
+  // Glue: ooze dots
+  if(t.type==='glue'){ctx.fillStyle='rgba(220,180,0,0.35)';for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(Math.cos(i*Math.PI*.5)*20,Math.sin(i*Math.PI*.5)*20,5,0,Math.PI*2);ctx.fill();}}
+  // Engi: extra mini barrel
+  if(t.type==='engi'){ctx.rotate(t.angle);ctx.fillStyle='#555';ctx.fillRect(2,-4,20,8);ctx.fillStyle='#222';ctx.fillRect(18,-2,6,4);}
   ctx.restore();
   // Emoji
   ctx.save();ctx.font='14px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d.emoji,t.x,t.y);ctx.restore();
@@ -419,6 +535,7 @@ function drawTower(t,alpha=1){
 function drawBloon(b){
   const d=BD[b.type];ctx.save();ctx.translate(b.x,b.y);
   if(b.frozen>0){ctx.strokeStyle='#74b9ff';ctx.lineWidth=3;ctx.globalAlpha=.7;ctx.beginPath();ctx.arc(0,0,d.r+5,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
+  if(b.dot>0){ctx.strokeStyle='#7fff00';ctx.lineWidth=2.5;ctx.globalAlpha=.75+Math.sin(Date.now()*.01)*.2;ctx.beginPath();ctx.arc(0,0,d.r+4,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
   if(b.slowed>0){ctx.strokeStyle='#9b59b6';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,d.r+3,0,Math.PI*2);ctx.stroke()}
   const gr=ctx.createRadialGradient(-d.r*.3,-d.r*.3,1,0,0,d.r);gr.addColorStop(0,lc(d.color,70));gr.addColorStop(.65,d.color);gr.addColorStop(1,dc(d.color,30));
   ctx.fillStyle=gr;ctx.beginPath();ctx.arc(0,0,d.r,0,Math.PI*2);ctx.fill();
@@ -452,15 +569,38 @@ function render(){
     const col=TD[p.tt]?TD[p.tt].color:'#fff';
     ctx.save();ctx.translate(p.x,p.y);
     if(p.tt==='ninja'){ctx.rotate(p.dist*.35);ctx.fillStyle='#95a5a6';for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(3.5,-2);ctx.lineTo(6,0);ctx.lineTo(3.5,2);ctx.closePath();ctx.fill()}}
+    else if(p.mortar||p.tt==='cannon'){ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ff6600';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.stroke();}
+    else if(p.magic||p.tt==='wizard'){const mg=ctx.createRadialGradient(0,0,0,0,0,7);mg.addColorStop(0,'#fff');mg.addColorStop(0.4,'#d88aff');mg.addColorStop(1,'rgba(120,0,200,0)');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(0,0,7,0,Math.PI*2);ctx.fill();}
+    else if(p.tt==='boomer'){ctx.rotate(p.dist*.28);ctx.strokeStyle='#d35400';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.arc(4,0,8,-Math.PI*.7,Math.PI*.7);ctx.stroke();ctx.lineCap='butt';}
+    else if(p.glue){ctx.fillStyle='rgba(220,180,0,0.85)';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,220,50,0.5)';ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();}
+    else if(p.acid){const ag=ctx.createRadialGradient(0,0,0,0,0,6);ag.addColorStop(0,'#7fff00');ag.addColorStop(1,'rgba(20,180,100,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();}
     else if(p.expl){ctx.fillStyle='#2d3436';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(0,0,2,0,Math.PI*2);ctx.fill()}
     else if(p.tt==='tack'){ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill()}
     else if(p.tt==='super'){ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,220,0,.3)';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill()}
     else if(p.tt==='dark'){ctx.fillStyle='#9b59b6';ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(155,89,182,.2)';ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill()}
+    else if(p.tt==='engi'){ctx.fillStyle='#aab';ctx.fillRect(-4,-1,8,2);ctx.fillStyle='#ccc';ctx.fillRect(-2,-2,3,4);}
     else{ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill()}
     ctx.restore();
   }
   // Particles
   for(const p of G.parts){ctx.globalAlpha=p.life*.8;ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+  // Spike piles
+  for(const sp of G.spikes){
+    ctx.save();ctx.translate(sp.x,sp.y);
+    ctx.fillStyle='#888';
+    for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);ctx.fillRect(-1.5,-10,3,10);ctx.restore();}
+    ctx.fillStyle='#555';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+  // Chain lightnings
+  for(const l of G.lightnings){
+    ctx.strokeStyle=`rgba(160,250,255,${l.life/8})`;ctx.lineWidth=2.5;ctx.shadowColor='#00ffff';ctx.shadowBlur=6;
+    ctx.beginPath();ctx.moveTo(l.x1,l.y1);
+    const mx=(l.x1+l.x2)/2+(Math.random()-0.5)*18,my=(l.y1+l.y2)/2+(Math.random()-0.5)*18;
+    ctx.quadraticCurveTo(mx,my,l.x2,l.y2);ctx.stroke();ctx.shadowBlur=0;
+    l.life--;
+  }
+  G.lightnings=G.lightnings.filter(l=>l.life>0);
   // Bloons
   for(const b of G.bloons)drawBloon(b);
   // Floats
@@ -518,7 +658,7 @@ function togglePause(){
 }
 function closeStartOverlay(){document.getElementById('startOverlay').style.display='none';G.status='between'}
 function restartGame(){
-  G={money:200,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+  G={money:200,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
   document.getElementById('endOverlay').style.display='none';
   document.getElementById('infoPanel').style.display='none';
   document.getElementById('waveBtn').disabled=false;
@@ -543,6 +683,14 @@ canvas.addEventListener('click',e=>{
   G.selTower=hit;if(hit)showTowerInfo(hit);else document.getElementById('infoPanel').style.display='none';
 });
 
+
+// ── KEYBOARD SHORTCUTS ─────────────────────────────────
+document.addEventListener('keydown',e=>{
+  // ignore if typing in admin input
+  if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
+  if(e.key==='e'||e.key==='E'){upgradeTower();}
+  if(e.key==='x'||e.key==='X'){sellTower();}
+});
 // ── LOOP ───────────────────────────────────────────────
 buildPath();buildShop();buildGrassDots();updateUI();
 function loop(){tickAutoWave();tick();render();requestAnimationFrame(loop)}
