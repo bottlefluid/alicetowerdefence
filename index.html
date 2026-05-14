@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💀 Alice Tower Defense</title>
+<title>A.. tower defence</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -133,7 +133,7 @@ function onPath(x,y,margin){for(let i=1;i<RP.length;i++){const a=RP[i-1],b=RP[i]
 // ── TOWER DEFS ─────────────────────────────────────────
 const TD={
   dart:   {name:'Dart Alice',    emoji:'🗡️', cost:175,  color:'#cc2200',range:130,cd:55, dmg:1,spd:8, pierce:1, special:'Homing daggers'},
-  tack:   {name:'Tack Alice',    emoji:'🩸', cost:230,  color:'#cc5500',range:80, cd:36, dmg:1,spd:7, pierce:1, special:'8-direction burst'},
+  tack:   {name:'Tack Alice',    emoji:'🩸', cost:230,  color:'#cc5500',range:80, cd:36, dmg:1,spd:7, pierce:8, special:'8-direction burst'},
   ice:    {name:'Ice Alice',     emoji:'❄️', cost:320,  color:'#4488cc',range:110,cd:110,dmg:0,spd:0, pierce:99,special:'Freeze aura'},
   bomb:   {name:'Bomb Alice',    emoji:'💣', cost:525,  color:'#882200',range:135,cd:72, dmg:2,spd:6, pierce:99,special:'Explosive AoE'},
   sniper: {name:'Sniper Alice',  emoji:'🎯', cost:350,  color:'#445522',range:600,cd:115,dmg:3,spd:26,pierce:4, special:'Long-range pierce'},
@@ -149,7 +149,7 @@ const TD={
   spike:  {name:'Spike Alice',   emoji:'⚙️', cost:300,  color:'#7f8c8d',range:0,  cd:120,dmg:2,spd:0, pierce:4, special:'Drops spike piles'},
   alch:   {name:'Alch Alice',    emoji:'⚗️', cost:550,  color:'#16a085',range:120,cd:55, dmg:1,spd:8, pierce:1, special:'Acid DoT on hit'},
   heli:   {name:'Heli Alice',    emoji:'🚁', cost:1600, color:'#2980b9',range:200,cd:12, dmg:1,spd:14,pierce:1, special:'Rapid aerial fire'},
-  engi:   {name:'Engi Alice',    emoji:'🔩', cost:400,  color:'#7d8b8c',range:130,cd:22, dmg:1,spd:13,pierce:1, special:'Rapid nail gun'},
+  engi:   {name:'Engi Alice',    emoji:'🔩', cost:777,  color:'#7d8b8c',range:130,cd:1, dmg:1,spd:1,pierce:3, special:'Rapid nail gun'},
 };
 const TKEYS=Object.keys(TD);
 
