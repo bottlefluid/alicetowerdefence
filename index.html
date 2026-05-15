@@ -134,7 +134,7 @@ function onPath(x,y,margin){for(let i=1;i<RP.length;i++){const a=RP[i-1],b=RP[i]
 const TD={
   dart:   {name:'Dart Alice',    emoji:'🗡️', cost:175,  color:'#cc2200',range:130,cd:55, dmg:1,spd:8, pierce:1, special:'Homing daggers'},
   tack:   {name:'Tack Alice',    emoji:'🩸', cost:230,  color:'#cc5500',range:80, cd:36, dmg:1,spd:7, pierce:8, special:'8-direction burst'},
-  ice:    {name:'Snow Alice',     emoji:'❄️', cost:3200000,  color:'#4488cc',range:110,cd:110,dmg:0,spd:0, pierce:99,special:'Freeze aura'},
+  ice:    {name:'Snow Alice',     emoji:'❄️', cost:3200000,color:'#4488cc',range:110,cd:110,dmg:0,spd:0, pierce:99,special:'Freeze aura',limit:1},
   bomb:   {name:'Bomb Alice',    emoji:'💣', cost:525,  color:'#882200',range:135,cd:72, dmg:2,spd:6, pierce:99,special:'Explosive AoE'},
   sniper: {name:'Sniper Alice',  emoji:'🎯', cost:350,  color:'#445522',range:600,cd:115,dmg:3,spd:26,pierce:4, special:'Long-range pierce'},
   dark:   {name:'Dark Alice',    emoji:'🌑', cost:625,  color:'#440011',range:120,cd:44, dmg:2,spd:9, pierce:1, special:'Shadow slow aura'},
@@ -149,7 +149,13 @@ const TD={
   spike:  {name:'Spike Alice',   emoji:'⚙️', cost:300,  color:'#7f8c8d',range:0,  cd:1,dmg:2,spd:0, pierce:999, special:'Drops spike piles'},
   alch:   {name:'Alch Alice',    emoji:'⚗️', cost:550,  color:'#16a085',range:120,cd:55, dmg:1,spd:8, pierce:1, special:'Acid DoT on hit'},
   heli:   {name:'Heli Alice',    emoji:'🚁', cost:1600, color:'#2980b9',range:200,cd:12, dmg:1,spd:14,pierce:1, special:'Rapid aerial fire'},
-  engi:   {name:'Engi Alice',    emoji:'🔩', cost:777,  color:'#7d8b8c',range:130,cd:50, dmg:1,spd:1,pierce:3, special:'Rapid nail gun'},
+  engi:   {name:'Engi Alice',        emoji:'🔩', cost:777,  color:'#7d8b8c',range:130,cd:50, dmg:1,spd:1, pierce:3, special:'Rapid nail gun'},
+  necro:  {name:'Necromancer Alice', emoji:'🧟', cost:700,  color:'#4a0a60',range:155,cd:85, dmg:4,spd:7, pierce:99,special:'Homing soul missile, AoE on impact'},
+  gambler:{name:'Gambler Alice',     emoji:'🎲', cost:480,  color:'#8b1a1a',range:140,cd:58, dmg:2,spd:12,pierce:2, special:'Random: MEGA / freeze AoE / gold / normal'},
+  vampire:{name:'Vampire Alice',     emoji:'🧛', cost:650,  color:'#6c0020',range:135,cd:62, dmg:2,spd:10,pierce:1, special:'Each bloon popped heals +1 life',limit:1},
+  storm:  {name:'Storm Alice',       emoji:'⛈️', cost:880,  color:'#1a3060',range:135,cd:65, dmg:2,spd:0, pierce:99,special:'Zaps ALL bloons in range simultaneously'},
+  phantom:{name:'Phantom Alice',     emoji:'👻', cost:540,  color:'#5d6d7e',range:150,cd:72, dmg:1,spd:10,pierce:3, special:'Pushes bloons backward on the path',limit:1},
+  banana: {name:'Banana Alice',      emoji:'🍌', cost:1100, color:'#d4ac00',range:0,  cd:360,dmg:0,spd:0, pierce:0, special:'Earns $50/$100/$200 every 6s',limit:1},
 };
 const TKEYS=Object.keys(TD);
 
@@ -164,7 +170,9 @@ const BD={
   white:  {hp:10, spd:2.0, reward:2,  color:'#dfe6e9',r:13,layers:'pink',     big:false},
   lead:   {hp:20, spd:1.0, reward:3,  color:'#95a5a6',r:14,layers:'black',    big:false,lead:true},
   ceramic:{hp:50, spd:2.0, reward:5,  color:'#d4ac0d',r:15,layers:'white',    big:false},
-  moab:   {hp:200,spd:0.55,reward:20, color:'#2980b9',r:28,layers:'ceramic',  big:true},
+  moab:       {hp:200, spd:0.55,reward:20,  color:'#2980b9',r:28,layers:'ceramic',big:true},
+  bad:        {hp:2500,spd:0.28,reward:250, color:'#8b0000',r:38,layers:'moab',   big:true},
+  bloonarius: {hp:10000,spd:0.12,reward:1000,color:'#1a0005',r:52,layers:'bad',  big:true,boss:true},
 };
 
 // ── WAVES ──────────────────────────────────────────────
@@ -192,7 +200,7 @@ const WAVES=[
 ];
 
 // ── GAME STATE ─────────────────────────────────────────
-let G={money:200,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+let G={money:200,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
 let mousePos=null;
 
 function tStats(t){const d=TD[t.type],lm=t.level===1?1:t.level===2?1.6:2.8;
@@ -206,6 +214,7 @@ function placeTower(type,x,y){
   if(G.money<d.cost)return false;
   if(onPath(x,y,32))return false;
   if(G.towers.some(t=>Math.hypot(t.x-x,t.y-y)<38))return false;
+  if(d.limit&&G.towers.filter(t=>t.type===type).length>=d.limit)return false;
   G.money-=d.cost;
   G.towers.push({id:G.nid++,type,x,y,level:1,upgCost:Math.floor(d.cost*.85),angle:0,cd:0,kills:0});
   updateUI();return true;
@@ -269,22 +278,85 @@ function fire(tower,target){
   }else if(tower.type==='alch'){
     const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
     G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:false,trg:null,expl:false,er:0,slows:false,acid:true});
+  }else if(tower.type==='necro'){
+    // Homing soul missile — explodes AoE on impact
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    const er=55+tower.level*15;
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:true,trg:target,expl:true,er,slows:false,soul:true,magic:true});
+    for(let i=0;i<6;i++)addPart(tower.x,tower.y,'#9b59b6');
+  }else if(tower.type==='gambler'){
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    const roll=Math.random();
+    if(roll<0.25){
+      // MEGA — massive damage, huge pierce
+      G.projs.push({...base,dmg:st.dmg*6,pierce:15,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:true,trg:target,expl:false,er:0,slows:false,gambler_type:'mega'});
+      addFloat(tower.x,tower.y-24,'💥 MEGA!','#ff4400');
+    }else if(roll<0.5){
+      // FREEZE AoE explosion
+      const er=70+tower.level*14;
+      G.projs.push({...base,dmg:st.dmg,pierce:st.pierce,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:false,trg:null,expl:true,er,slows:true,gambler_type:'freeze'});
+      addFloat(tower.x,tower.y-24,'❄️ FREEZE!','#74b9ff');
+    }else if(roll<0.75){
+      // GOLD — pure money, no projectile
+      const g=4+tower.level*2;G.money+=g;updateUI();
+      addFloat(tower.x,tower.y-24,'+$'+g+' LUCKY!','#ffd700');
+    }else{
+      // Normal shot
+      G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:true,trg:target,expl:false,er:0,slows:false,gambler_type:'normal'});
+    }
+  }else if(tower.type==='phantom'){
+    // Homing ghost shot that pushes bloons backward
+    const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track:true,trg:target,expl:false,er:0,slows:false,phantom:true,magic:true});
   }else{
     const dx=target.x-tower.x,dy=target.y-tower.y,dl=Math.hypot(dx,dy);
     const expl=tower.type==='bomb';
-    const track=['dart','dark','super','heli','engi'].includes(tower.type);
-    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track,trg:track?target:null,expl,er:expl?(38+tower.level*10):0,slows:tower.type==='dark'});
+    const track=['dart','dark','super','heli','engi','vampire'].includes(tower.type);
+    G.projs.push({...base,vx:(dx/dl)*st.spd,vy:(dy/dl)*st.spd,track,trg:track?target:null,expl,er:expl?(38+tower.level*10):0,slows:tower.type==='dark',vamp:tower.type==='vampire',magic:tower.type==='vampire'||false});
   }
 }
-function explode(p){for(let i=0;i<22;i++)addPart(p.x,p.y,'#e67e22');addPart(p.x,p.y,'#f1c40f');for(const b of G.bloons){if(!b.alive)continue;if(Math.hypot(b.x-p.x,b.y-p.y)<=p.er)damageBloon(b,p.dmg,true)}}
+function explode(p){
+  const col=p.gambler_type==='freeze'?'#74b9ff':'#e67e22';
+  for(let i=0;i<22;i++)addPart(p.x,p.y,col);addPart(p.x,p.y,'#f1c40f');
+  for(const b of G.bloons){if(!b.alive)continue;if(Math.hypot(b.x-p.x,b.y-p.y)<=p.er){damageBloon(b,p.dmg,true);if(p.gambler_type==='freeze')b.frozen=200;}}
+}
 
 // ── PARTICLES & FLOATS ─────────────────────────────────
 function addPart(x,y,col){const a=Math.random()*Math.PI*2,s=1+Math.random()*3;G.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,col,life:1,dec:.04+Math.random()*.04,r:2+Math.random()*3})}
 function addFloat(x,y,txt,col){G.floats.push({x,y,txt,col,life:1.0})}
 
+// ── SOUL BLOONS (Necromancer) ───────────────────────────
+function tickSouls(){
+  for(const s of G.souls){
+    if(!s.alive)continue;
+    s.dist-=s.spd;
+    if(s.dist<=0){s.alive=false;continue}
+    const p=posAt(s.dist);s.x=p.x;s.y=p.y;
+    for(const b of G.bloons){
+      if(!b.alive)continue;
+      if(Math.hypot(s.x-b.x,s.y-b.y)<BD[b.type].r+14){
+        // Soul collides — deal AoE damage to all nearby bloons
+        for(const nb of G.bloons){if(nb.alive&&Math.hypot(s.x-nb.x,s.y-nb.y)<50)damageBloon(nb,s.dmg,true,true)}
+        for(let i=0;i<16;i++)addPart(s.x,s.y,'#9b59b6');
+        for(let i=0;i<8;i++)addPart(s.x,s.y,'#ff00ff');
+        s.alive=false;break;
+      }
+    }
+  }
+  G.souls=G.souls.filter(s=>s.alive);
+}
+
 // ── WAVE CONTROL ───────────────────────────────────────
 function generateEndlessWave(waveNum){
   const tier=Math.floor((waveNum-21)/5);
+  if(waveNum>=40&&waveNum%15===0){
+    // Bloonarius boss wave
+    return[{type:'bloonarius',remaining:1,timer:0,interval:999},{type:'bad',remaining:2,timer:300,interval:200},{type:'moab',remaining:6,timer:150,interval:70}];
+  }
+  if(waveNum>=25&&waveNum%8===0){
+    // BAD wave
+    return[{type:'bad',remaining:1+Math.floor((waveNum-25)/8),timer:0,interval:250},{type:'moab',remaining:4+tier,timer:120,interval:70},{type:'ceramic',remaining:8,timer:60,interval:28}];
+  }
   if(waveNum%10===0){
     return[{type:'moab',remaining:2+Math.floor(waveNum/10),timer:0,interval:80},{type:'ceramic',remaining:8+tier,timer:20,interval:28}];
   }else if(waveNum%5===0){
@@ -341,12 +413,13 @@ function tick(){
   for(let s=0;s<steps;s++){
     if(G.status==='gameover')break;
     tickWave();
+    tickSouls();
     // Move bloons
     for(const b of G.bloons){
       if(!b.alive)continue;
       const eff=b.frozen>0?0:b.slowed>0?b.spd*.5:b.spd;
       b.dist+=eff;if(b.frozen>0)b.frozen--;if(b.slowed>0)b.slowed--;
-      if(b.dist>=TPL){b.alive=false;const dmg=BD[b.type].big?10:1;G.lives=Math.max(0,G.lives-dmg);updateUI();if(G.lives<=0){G.status='gameover';showEnd('💀 GAME OVER','You reached wave '+G.wave+'. Score: '+G.score,'#ff2200');return}continue}
+      if(b.dist>=TPL){b.alive=false;const dmg=b.type==='bloonarius'?200:b.type==='bad'?50:BD[b.type].big?10:1;G.lives=Math.max(0,G.lives-dmg);updateUI();if(G.lives<=0){G.status='gameover';showEnd('💀 GAME OVER','You reached wave '+G.wave+'. Score: '+G.score,'#ff2200');return}continue}
       const p=posAt(b.dist);b.x=p.x;b.y=p.y;
       if(b.dot>0){b.dot--;if(b.dot%20===0)damageBloon(b,b.dotDmg,false,true)}
     }
@@ -408,6 +481,40 @@ function tick(){
         }
         tower.cd=st.cd;continue;
       }
+      // Banana: passive income every 6s
+      if(tower.type==='banana'){
+        if(tower.cd===0){
+          const inc=50*(1<<(tower.level-1));
+          G.money+=inc;addFloat(tower.x,tower.y-26,'+$'+inc,'#ffd700');
+          for(let i=0;i<10;i++)addPart(tower.x,tower.y,'#ffd700');
+          updateUI();tower.cd=st.cd;
+        }
+        continue;
+      }
+      // Necromancer: spawn soul bloons from the far end of the path moving backward
+      if(tower.type==='necro'){
+        if(tower.cd===0&&G.bloons.length>0){
+          const dmg=4+tower.level*2;const spd=2.5+tower.level*0.9;
+          const sp=posAt(TPL);
+          G.souls.push({id:G.nid++,dist:TPL,spd,dmg,x:sp.x,y:sp.y,alive:true});
+          for(let i=0;i<8;i++)addPart(tower.x,tower.y,'#9b59b6');
+          tower.cd=st.cd;
+        }
+        continue;
+      }
+      // Storm: zap every bloon in range at once with lightning
+      if(tower.type==='storm'){
+        if(tower.cd===0){
+          const tgts=G.bloons.filter(b=>b.alive&&Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range);
+          if(tgts.length>0){
+            for(const b of tgts){damageBloon(b,st.dmg,false,true);for(let i=0;i<4;i++)addPart(b.x,b.y,'#aaf0ff')}
+            G.lightnings.push({x1:tower.x,y1:tower.y,x2:tgts[0].x,y2:tgts[0].y,life:9});
+            for(let i=1;i<Math.min(tgts.length,4);i++)G.lightnings.push({x1:tgts[i-1].x,y1:tgts[i-1].y,x2:tgts[i].x,y2:tgts[i].y,life:7});
+            tower.cd=st.cd;
+          }
+        }
+        continue;
+      }
       if(tower.cd>0)continue;
       let best=null,bDist=-1;
       for(const b of G.bloons){if(Math.hypot(b.x-tower.x,b.y-tower.y)<=st.range&&b.dist>bDist){bDist=b.dist;best=b}}
@@ -429,7 +536,17 @@ function tick(){
           if(BD[b.type].lead&&!p.expl&&!magic&&!p.glue){p.alive=false;break}
           if(p.glue){b.slowed=290+p.lvl*70;}
           else if(p.acid){damageBloon(b,p.dmg,false,true);b.dot=120+p.lvl*40;b.dotDmg=1;}
-          else{damageBloon(b,p.dmg,false,magic);}
+          else if(p.phantom){
+            // Push bloon backward on path
+            const push=80+p.lvl*25;b.dist=Math.max(0,b.dist-push);
+            const np=posAt(b.dist);b.x=np.x;b.y=np.y;
+            for(let i=0;i<10;i++)addPart(b.x,b.y,'#aabbff');
+          }
+          else{
+            const wasAlive=b.alive;
+            damageBloon(b,p.dmg,false,magic);
+            if(p.vamp&&wasAlive&&!b.alive){G.lives=Math.min(200,G.lives+1);for(let i=0;i<5;i++)addPart(b.x,b.y,'#ff0055');updateUI();}
+          }
           if(p.slows)b.slowed=65;
           addPart(b.x,b.y,BD[b.type].color);
           p.pierced++;if(p.pierced>=p.pierce){p.alive=false;break}
@@ -498,7 +615,7 @@ function drawTower(t,alpha=1){
   ctx.fillStyle=gr;ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle=dc(d.color,30);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.stroke();
   // Barrel (directional types)
-  if(!['ice','dark','tack','village','spike','glue','alch','boomer','druid','cannon'].includes(t.type)){
+  if(!['ice','dark','tack','village','spike','glue','alch','boomer','druid','cannon','banana','necro','storm'].includes(t.type)){
     ctx.rotate(t.angle);ctx.fillStyle=dc(d.color,50);ctx.fillRect(2,-3,18,6);ctx.fillStyle='#222';ctx.fillRect(16,-2,5,4);
   }
   // Tack: spikes
@@ -527,6 +644,67 @@ function drawTower(t,alpha=1){
   if(t.type==='glue'){ctx.fillStyle='rgba(220,180,0,0.35)';for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(Math.cos(i*Math.PI*.5)*20,Math.sin(i*Math.PI*.5)*20,5,0,Math.PI*2);ctx.fill();}}
   // Engi: extra mini barrel
   if(t.type==='engi'){ctx.rotate(t.angle);ctx.fillStyle='#555';ctx.fillRect(2,-4,20,8);ctx.fillStyle='#222';ctx.fillRect(18,-2,6,4);}
+  // Necromancer: rotating bone arms + purple soul wisps
+  if(t.type==='necro'){
+    ctx.fillStyle='rgba(120,0,160,0.25)';ctx.beginPath();ctx.arc(0,0,32,0,Math.PI*2);ctx.fill();
+    ctx.save();ctx.rotate(Date.now()*0.0009);
+    for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.fillStyle='rgba(200,100,255,0.85)';ctx.fillRect(18,-2,14,4);ctx.fillRect(28,-4,6,8);}
+    ctx.restore();
+    ctx.save();ctx.rotate(-Date.now()*0.0014);
+    for(let i=0;i<3;i++){ctx.rotate(Math.PI*2/3);ctx.fillStyle='rgba(255,180,255,0.5)';ctx.beginPath();ctx.arc(22,0,5,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+  }
+  // Gambler: spinning suit symbols orbiting the tower
+  if(t.type==='gambler'){
+    const suits=['♠','♥','♦','♣'];const cols=['#fff','#ff3333','#ff3333','#fff'];
+    for(let i=0;i<4;i++){const oa=Date.now()*.0022+i*Math.PI/2;const sx=Math.cos(oa)*23,sy=Math.sin(oa)*23;ctx.fillStyle=cols[i];ctx.font='bold 11px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(suits[i],sx,sy);}
+    ctx.fillStyle='rgba(180,20,20,0.18)';ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.fill();
+  }
+  // Vampire: bat wings arcing out each side + blood drip glow
+  if(t.type==='vampire'){
+    const pulse=0.5+0.5*Math.sin(Date.now()*.004);
+    ctx.fillStyle=`rgba(180,0,40,${0.2*pulse+0.1})`;ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill();
+    ctx.save();ctx.strokeStyle='rgba(140,0,30,0.9)';ctx.lineWidth=2.5;
+    // Left wing
+    ctx.beginPath();ctx.moveTo(-6,-4);ctx.bezierCurveTo(-28,-22,-34,-10,-30,4);ctx.bezierCurveTo(-26,12,-14,8,-6,4);ctx.stroke();
+    // Right wing
+    ctx.beginPath();ctx.moveTo(6,-4);ctx.bezierCurveTo(28,-22,34,-10,30,4);ctx.bezierCurveTo(26,12,14,8,6,4);ctx.stroke();
+    ctx.restore();
+  }
+  // Storm: crackling electric ring with arcing bolts
+  if(t.type==='storm'){
+    const t2=Date.now();
+    ctx.strokeStyle='rgba(80,140,255,0.5)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,26,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(180,220,255,0.3)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.stroke();
+    // Mini lightning bolts around ring
+    for(let i=0;i<6;i++){
+      const a=(t2*.002+i*Math.PI/3);const jx=(Math.random()-0.5)*6,jy=(Math.random()-0.5)*6;
+      ctx.strokeStyle='rgba(160,220,255,0.7)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(Math.cos(a)*20+jx,Math.sin(a)*20+jy);ctx.lineTo(Math.cos(a)*28+jx,Math.sin(a)*28+jy);ctx.stroke();
+    }
+    ctx.fillStyle='rgba(40,80,180,0.18)';ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();
+  }
+  // Phantom: translucent ghost tail + fade rings
+  if(t.type==='phantom'){
+    const fp=0.4+0.3*Math.sin(Date.now()*.003);
+    ctx.globalAlpha*=0.7;
+    ctx.fillStyle=`rgba(150,180,220,${fp*0.3})`;ctx.beginPath();ctx.arc(0,0,32,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=`rgba(180,200,240,${fp*0.5})`;ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    // Wavy ghost tail beneath
+    ctx.strokeStyle=`rgba(200,220,255,${fp*0.6})`;ctx.lineWidth=3;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-8,14);
+    ctx.quadraticCurveTo(-14+Math.sin(Date.now()*.004)*5,22,-8,30);
+    ctx.quadraticCurveTo(-2,38,4,30);ctx.stroke();ctx.lineCap='butt';
+    ctx.globalAlpha*=(1/0.7);
+  }
+  // Banana: golden glow + orbiting bananas + coin sparkles
+  if(t.type==='banana'){
+    const pulse=0.6+0.4*Math.sin(Date.now()*.004);
+    ctx.fillStyle=`rgba(255,215,0,${0.22*pulse})`;ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=`rgba(255,240,100,${0.1*pulse})`;ctx.beginPath();ctx.arc(0,0,44,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<3;i++){const oa=Date.now()*.0018+i*(Math.PI*2/3);ctx.font='13px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🍌',Math.cos(oa)*22,Math.sin(oa)*22);}
+  }
   ctx.restore();
   // Emoji
   ctx.save();ctx.font='14px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d.emoji,t.x,t.y);ctx.restore();
@@ -540,7 +718,13 @@ function drawBloon(b){
   const gr=ctx.createRadialGradient(-d.r*.3,-d.r*.3,1,0,0,d.r);gr.addColorStop(0,lc(d.color,70));gr.addColorStop(.65,d.color);gr.addColorStop(1,dc(d.color,30));
   ctx.fillStyle=gr;ctx.beginPath();ctx.arc(0,0,d.r,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,.3)';ctx.beginPath();ctx.ellipse(-d.r*.25,-d.r*.3,d.r*.3,d.r*.2,-.5,0,Math.PI*2);ctx.fill();
-  if(d.big){ctx.fillStyle='#fff';ctx.font='bold 9px Nunito';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('MOAB',0,0)}
+  if(d.big){
+    const lbl=b.type==='bloonarius'?'B.RIUS':b.type==='bad'?'B.A.D':'MOAB';
+    if(b.type==='bloonarius'){const p2=0.5+0.5*Math.sin(Date.now()*.005);ctx.strokeStyle=`rgba(255,0,0,${0.35*p2+0.1})`;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,d.r+10,0,Math.PI*2);ctx.stroke();}
+    if(b.type==='bad'){ctx.strokeStyle='rgba(180,0,0,0.5)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,d.r+6,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=b.type==='bloonarius'?'#ff3300':b.type==='bad'?'#ff8800':'#fff';
+    ctx.font=`bold ${b.type==='bloonarius'?10:9}px Nunito`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(lbl,0,0);
+  }
   if(d.hp>5){const bw=d.r*2,hp=b.hp/b.maxHp;ctx.fillStyle='#222';ctx.fillRect(-d.r,d.r+3,bw,4);ctx.fillStyle=hp>.5?'#2ecc71':hp>.25?'#f1c40f':'#e74c3c';ctx.fillRect(-d.r,d.r+3,bw*hp,4)}
   ctx.restore();
 }
@@ -564,6 +748,15 @@ function render(){
   }
   // Towers
   for(const t of G.towers)drawTower(t);
+  // Soul bloons (Necromancer — travel backward along path)
+  for(const s of G.souls){
+    const sp=0.55+0.45*Math.sin(Date.now()*.007+s.id);
+    ctx.save();ctx.translate(s.x,s.y);
+    ctx.fillStyle=`rgba(100,0,160,${0.35*sp})`;ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=`rgba(200,60,255,${0.65+0.35*sp})`;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();
+    ctx.font='12px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('💀',0,0);
+    ctx.restore();
+  }
   // Projectiles
   for(const p of G.projs){
     const col=TD[p.tt]?TD[p.tt].color:'#fff';
@@ -579,6 +772,21 @@ function render(){
     else if(p.tt==='super'){ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,220,0,.3)';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill()}
     else if(p.tt==='dark'){ctx.fillStyle='#9b59b6';ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(155,89,182,.2)';ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill()}
     else if(p.tt==='engi'){ctx.fillStyle='#aab';ctx.fillRect(-4,-1,8,2);ctx.fillStyle='#ccc';ctx.fillRect(-2,-2,3,4);}
+    // Necromancer soul missile — pulsing skull orb
+    else if(p.soul){
+      const sp=0.6+0.4*Math.sin(Date.now()*.008+p.id);
+      ctx.fillStyle=`rgba(160,0,200,${0.5*sp})`;ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(220,100,255,0.9)';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
+      ctx.font='9px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.fillText('💀',0,0);
+    }
+    // Gambler projectiles — color by type
+    else if(p.gambler_type==='mega'){ctx.fillStyle='#ff2200';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,80,0,0.4)';ctx.beginPath();ctx.arc(0,0,14,0,Math.PI*2);ctx.fill();}
+    else if(p.gambler_type==='freeze'){ctx.fillStyle='#74b9ff';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(100,200,255,0.35)';ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();}
+    else if(p.gambler_type){ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill();}
+    // Vampire — deep red homing bolt
+    else if(p.vamp){ctx.fillStyle='#cc0030';ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,0,60,0.3)';ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();}
+    // Phantom — translucent blue-white wisp
+    else if(p.phantom){ctx.globalAlpha*=0.75;ctx.fillStyle='rgba(180,210,255,0.9)';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(220,235,255,0.4)';ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();ctx.globalAlpha*=(1/0.75);}
     else{ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,4,0,Math.PI*2);ctx.fill()}
     ctx.restore();
   }
@@ -613,7 +821,12 @@ function updateUI(){
   document.getElementById('mVal').textContent=G.money;
   document.getElementById('lVal').textContent=G.lives;
   document.getElementById('sVal').textContent=G.score;
-  document.querySelectorAll('.tbtn').forEach(b=>{b.classList.toggle('cant',G.money<TD[b.dataset.type].cost)});
+  document.querySelectorAll('.tbtn').forEach(b=>{
+    const td=TD[b.dataset.type];
+    const limitHit=td.limit&&G.towers.filter(t=>t.type===b.dataset.type).length>=td.limit;
+    b.classList.toggle('cant',G.money<td.cost||limitHit);
+    b.title=limitHit?'Limit: only 1 allowed':'';
+  });
   if(G.selTower)showTowerInfo(G.selTower);
 }
 function showTowerInfo(t){
@@ -621,11 +834,11 @@ function showTowerInfo(t){
   document.getElementById('infoPanel').style.display='block';
   document.getElementById('selName').textContent=d.emoji+' '+d.name+(t.level>1?' ★'.repeat(t.level-1):'');
   document.getElementById('selLvl').textContent='Level '+t.level+(t.level===3?' (MAX)':'');
-  document.getElementById('selDmg').textContent=st.dmg+(t.type==='ice'?' (freeze)':'');
-  document.getElementById('selRange').textContent=st.range+'px';
-  document.getElementById('selRate').textContent=Math.round(60/st.cd)+'/ sec';
+  if(t.type==='banana'){const inc=50*(1<<(t.level-1));document.getElementById('selDmg').textContent='$'+inc+' income';document.getElementById('selRate').textContent='Every 6s';}
+  else{document.getElementById('selDmg').textContent=st.dmg+(t.type==='ice'?' (freeze)':'');document.getElementById('selRate').textContent=Math.round(60/st.cd)+'/ sec';}
+  document.getElementById('selRange').textContent=t.type==='banana'?'Passive':st.range+'px';
   document.getElementById('selKills').textContent=t.kills||0;
-  document.getElementById('selSpec').textContent=d.special;
+  document.getElementById('selSpec').textContent=d.special+(d.limit?' (Limit: '+d.limit+')':'');
   const ub=document.getElementById('upgBtn');
   if(t.level>=3){ub.textContent='Max Level';ub.disabled=true}
   else{ub.textContent='Upgrade ($'+t.upgCost+')';ub.disabled=G.money<t.upgCost}
@@ -641,7 +854,9 @@ function buildShop(){
   for(const k of TKEYS){const d=TD[k];const btn=document.createElement('button');btn.className='tbtn';btn.dataset.type=k;btn.innerHTML=`<span class="tico">${d.emoji}</span><div class="tinfo"><div class="tname">${d.name}</div><div class="tcost">$${d.cost}</div><div class="tspec">${d.special}</div></div>`;btn.onclick=()=>selectType(k);shop.appendChild(btn)}
 }
 function selectType(type){
-  if(G.money<TD[type].cost)return;
+  const d=TD[type];
+  if(G.money<d.cost)return;
+  if(d.limit&&G.towers.filter(t=>t.type===type).length>=d.limit)return;
   if(G.placing===type){G.placing=null;document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('sel'))}
   else{G.placing=type;G.selTower=null;document.getElementById('infoPanel').style.display='none';document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('sel',b.dataset.type===type))}
 }
@@ -658,7 +873,7 @@ function togglePause(){
 }
 function closeStartOverlay(){document.getElementById('startOverlay').style.display='none';G.status='between'}
 function restartGame(){
-  G={money:200,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+  G={money:200,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
   document.getElementById('endOverlay').style.display='none';
   document.getElementById('infoPanel').style.display='none';
   document.getElementById('waveBtn').disabled=false;
@@ -691,7 +906,16 @@ document.addEventListener('keydown',e=>{
   if(e.key==='e'||e.key==='E'){upgradeTower();}
   if(e.key==='x'||e.key==='X'){sellTower();}
 });
-// ── LOOP ───────────────────────────────────────────────
+// ── EMOJI CURSOR ───────────────────────────────────────
+(function(){
+  const c=document.createElement('canvas');c.width=32;c.height=32;
+  const x=c.getContext('2d');x.font='26px serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('🍆',16,16);
+  const url=c.toDataURL();
+  document.getElementById('gameCanvas').style.cursor=`url(${url}) 16 16, crosshair`;
+  document.body.style.cursor=`url(${url}) 16 16, auto`;
+})();
+
 buildPath();buildShop();buildGrassDots();updateUI();
 function loop(){tickAutoWave();tick();render();requestAnimationFrame(loop)}
 loop();
