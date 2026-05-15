@@ -70,6 +70,56 @@ body{background:linear-gradient(160deg,#0a0000,#150000,#0a0000);font-family:'Nun
 #startOverlay .hint{font-size:12px;color:#884444;max-width:300px;line-height:1.6}
 #startOverlay button{margin-top:10px;padding:12px 32px;background:linear-gradient(135deg,#cc0000,#880000);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Fredoka One',cursive;font-size:18px;box-shadow:0 4px 20px #cc000050}
 #startOverlay button:hover{filter:brightness(1.15)}
+/* ── LOBBY ── */
+#lobbyOverlay{position:fixed;inset:0;background:linear-gradient(160deg,#050000,#0d0000,#050000);display:flex;align-items:center;justify-content:center;z-index:300;font-family:'Nunito',sans-serif}
+#lobbyCard{background:linear-gradient(160deg,#1a0000,#0d0000);border:2px solid #550000;border-radius:20px;padding:30px 26px;width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 0 80px #cc000028,0 0 30px #0008}
+#lobbyTitle{font-family:'Fredoka One',cursive;font-size:30px;color:#ff2200;text-align:center;text-shadow:0 0 30px #ff220055;margin-bottom:3px}
+#lobbySubtitle{color:#662222;text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
+#lobbyDropsBox{display:flex;align-items:center;justify-content:center;gap:10px;background:#0d0000;border:1px solid #330000;border-radius:12px;padding:11px 16px;margin-bottom:18px}
+#lobbyDropsBox .rd-icon{font-size:26px}
+#lobbyDropsBox .rd-text{display:flex;flex-direction:column}
+#lobbyDropsBox .rd-label{font-size:10px;color:#553333;text-transform:uppercase;letter-spacing:2px}
+#lobbyDropsBox .rd-val{font-size:22px;font-weight:900;color:#74b9ff;text-shadow:0 0 12px #74b9ff40}
+.lbtn{width:100%;padding:12px;border:none;border-radius:11px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;margin-bottom:9px;transition:all .15s;letter-spacing:.5px}
+#lobbyPlayBtn{background:linear-gradient(135deg,#cc0000,#880000);color:#fff;box-shadow:0 3px 20px #cc000050}
+#lobbyPlayBtn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+#lobbyShopBtn{background:#160000;border:1px solid #440000;color:#884444}
+#lobbyShopBtn:hover{border-color:#ff2200;color:#ff4422;background:#220000}
+#lobbyEarned{background:#001a33;border:1px solid #004488;border-radius:10px;padding:9px 14px;text-align:center;color:#74b9ff;font-weight:800;font-size:13px;margin-bottom:14px;display:none}
+#lobbyHint{color:#442222;font-size:10px;text-align:center;line-height:1.6;margin-top:4px}
+/* Tower Shop Panel */
+#towerShopPanel{display:none}
+#towerShopPanel h3{font-family:'Fredoka One',cursive;font-size:20px;color:#ff2200;text-align:center;margin-bottom:14px}
+.si{display:flex;align-items:center;gap:10px;background:#0d0000;border:1px solid #280000;border-radius:10px;padding:9px 12px;margin-bottom:7px}
+.si-em{font-size:22px;width:28px;text-align:center;flex-shrink:0}
+.si-info{flex:1;min-width:0}
+.si-name{color:#fff;font-weight:800;font-size:12px}
+.si-desc{color:#553333;font-size:9px;font-style:italic}
+.si-btn{padding:6px 12px;border:none;border-radius:7px;font-family:'Nunito',sans-serif;font-weight:800;font-size:10px;white-space:nowrap;cursor:pointer}
+.si-default{background:#111a00;color:#556600;cursor:default}
+.si-owned{background:#001a00;color:#44aa44;cursor:default}
+.si-buy{background:linear-gradient(135deg,#001433,#002244);color:#74b9ff;border:1px solid #003366;cursor:pointer}
+.si-buy:hover:not(:disabled){filter:brightness(1.2)}
+.si-buy:disabled,.si-poor{opacity:.38;cursor:not-allowed}
+#shopBackBtn{width:100%;padding:9px;background:#0d0000;border:1px solid #330000;border-radius:9px;color:#663333;font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;cursor:pointer;margin-top:4px}
+#shopBackBtn:hover{border-color:#ff2200;color:#ff4422}
+/* Lobby admin panel */
+#lobbyAdminBtn{width:100%;padding:7px;background:transparent;border:1px solid #1a1a1a;border-radius:8px;color:#1f1f1f;font-family:'Nunito',sans-serif;font-weight:700;font-size:10px;cursor:pointer;margin-top:8px;letter-spacing:2px;transition:all .3s}
+#lobbyAdminBtn:hover{border-color:#333;color:#333}
+#lobbyAdminPanel{display:none;margin-top:8px;background:#000d00;border:1px solid #003300;border-radius:10px;padding:10px;gap:7px;flex-direction:column}
+#lobbyAdminPanel.open{display:flex}
+#adminPwInput{width:100%;padding:7px;background:#001100;border:1px solid #003300;border-radius:7px;color:#00cc00;font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;outline:none;text-align:center;letter-spacing:3px}
+#adminPwInput::placeholder{color:#003300;letter-spacing:1px}
+#adminPwInput:focus{border-color:#00cc00}
+#adminRdInput{width:100%;padding:7px;background:#001100;border:1px solid #003300;border-radius:7px;color:#74b9ff;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;outline:none;text-align:center;display:none}
+#adminRdInput::placeholder{color:#003333}
+#adminRdGive{width:100%;padding:7px;background:linear-gradient(135deg,#003300,#004400);border:1px solid #00550055;border-radius:7px;color:#00cc00;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;display:none}
+#adminRdGive:hover{filter:brightness(1.2)}
+#adminUnlockMsg{color:#00cc00;font-size:10px;text-align:center;display:none}
+/* End overlay raindrop info */
+#endRd{color:#74b9ff;font-size:13px;font-weight:800;margin:8px 0 4px}
+.end-btns{display:flex;gap:10px;margin-top:10px}
+.end-btns button{padding:10px 22px;font-size:15px}
 </style>
 </head>
 <body>
@@ -84,15 +134,14 @@ body{background:linear-gradient(160deg,#0a0000,#150000,#0a0000);font-family:'Nun
 <div id="mainWrap">
   <div id="canvasWrap">
     <canvas id="gameCanvas" width="840" height="510"></canvas>
-    <div id="startOverlay">
-      <h2>💀 Alice Tower Defense 💀</h2>
-      <div class="hint">Click a tower in the shop to select it, then click on the grass to place it.<br>Right-click to cancel placement. Click a tower to upgrade or sell.<br>Endless waves — enemies get 10% stronger every wave!</div>
-      <button onclick="closeStartOverlay()">⚔️ Play</button>
-    </div>
     <div id="endOverlay" class="overlay" style="display:none">
       <h2 id="endTitle" style="color:#ff2200">💀 GAME OVER 💀</h2>
       <p id="endMsg">You survived 0 waves.</p>
-      <button onclick="restartGame()">🔁 Try Again</button>
+      <div id="endRd" style="display:none"></div>
+      <div class="end-btns">
+        <button onclick="restartGame()">🔁 Play Again</button>
+        <button onclick="goToLobby()" style="background:linear-gradient(135deg,#003366,#002244)">🏠 Lobby</button>
+      </div>
     </div>
   </div>
   <div id="sidebar">
@@ -118,6 +167,39 @@ body{background:linear-gradient(160deg,#0a0000,#150000,#0a0000);font-family:'Nun
     <div id="adminPanel">
       <input id="adminInput" type="number" placeholder="Enter amount..." min="1" onkeydown="if(event.key==='Enter')giveAdminMoney()">
       <button id="adminGive" onclick="giveAdminMoney()">💰 Give Money</button>
+    </div>
+  </div>
+</div>
+<!-- LOBBY OVERLAY — must be before <script> so DOM exists when JS runs -->
+<div id="lobbyOverlay">
+  <div id="lobbyCard">
+    <div id="lobbyTitle">💀 Alice Tower Defense 💀</div>
+    <div id="lobbySubtitle">Survive the endless horde</div>
+    <div id="lobbyDropsBox">
+      <div class="rd-icon">💧</div>
+      <div class="rd-text">
+        <div class="rd-label">Raindrops</div>
+        <div class="rd-val" id="lobbyDropsVal">0</div>
+      </div>
+    </div>
+    <div id="lobbyEarned"></div>
+    <div id="lobbyMain">
+      <button class="lbtn" id="lobbyPlayBtn" onclick="startFromLobby()">⚔️ Play</button>
+      <button class="lbtn" id="lobbyShopBtn" onclick="showTowerShopPanel()">💧 Tower Shop</button>
+      <div id="lobbyHint">Start with Dark Alice, Tack Alice &amp; Boomer Alice.<br>Unlock more towers by spending raindrops earned in-game.<br>Click grass to place · Right-click to cancel · E=upgrade · X=sell</div>
+    </div>
+    <div id="towerShopPanel">
+      <h3>💧 Tower Shop</h3>
+      <div id="shopItemsContainer"></div>
+      <button id="shopBackBtn" onclick="hideTowerShopPanel()">← Back to Lobby</button>
+      <!-- Hidden admin panel — password protected -->
+      <button id="lobbyAdminBtn" onclick="toggleLobbyAdmin()">· · ·</button>
+      <div id="lobbyAdminPanel">
+        <input id="adminPwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter')checkAdminPw()">
+        <input id="adminRdInput" type="number" placeholder="Raindrops to grant..." min="1">
+        <button id="adminRdGive" onclick="giveAdminRd()">💧 Grant Raindrops</button>
+        <div id="adminUnlockMsg">✓ Access granted</div>
+      </div>
     </div>
   </div>
 </div>
@@ -200,7 +282,7 @@ const WAVES=[
 ];
 
 // ── GAME STATE ─────────────────────────────────────────
-let G={money:200,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+let G={money:250,lives:100,wave:0,score:0,status:'start',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
 let mousePos=null;
 
 function tStats(t){const d=TD[t.type],lm=t.level===1?1:t.level===2?1.6:2.8;
@@ -844,14 +926,55 @@ function showTowerInfo(t){
   else{ub.textContent='Upgrade ($'+t.upgCost+')';ub.disabled=G.money<t.upgCost}
   document.getElementById('sellBtn').textContent='Sell ($'+Math.floor(d.cost*.7)+')';
 }
+// ── SAVE / RAINDROP SYSTEM ────────────────────────────
+const SAVE_KEY='atd_save_v1';
+const DEFAULT_UNLOCKED=['dark','tack','boomer'];
+const UNLOCK_PRICES={dart:500,sniper:1500,ice:2000,ninja:2500,bomb:3000,gambler:3500,engi:4000,phantom:5000,vampire:6000,storm:7000,necro:8000,super:10000,banana:12000};
+function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));return(s&&Array.isArray(s.unlocked))?s:{rd:0,unlocked:[...DEFAULT_UNLOCKED]};}catch{return{rd:0,unlocked:[...DEFAULT_UNLOCKED]};}}
+function writeSave(s){try{localStorage.setItem(SAVE_KEY,JSON.stringify(s));}catch{}}
+let SAVE=loadSave();
+let _lastRdEarned=0;
+function awardRaindrops(){const earned=Math.max(5,G.wave*50+Math.floor(G.score/100));SAVE.rd+=earned;writeSave(SAVE);_lastRdEarned=earned;return earned;}
+function buyTower(type,price){
+  if(SAVE.rd<price||SAVE.unlocked.includes(type))return;
+  SAVE.rd-=price;SAVE.unlocked.push(type);writeSave(SAVE);
+  document.getElementById('lobbyDropsVal').textContent=SAVE.rd.toLocaleString();
+  buildLobbyShop();
+}
+function buildLobbyShop(){
+  const c=document.getElementById('shopItemsContainer');c.innerHTML='';
+  DEFAULT_UNLOCKED.forEach(type=>{const d=TD[type];c.innerHTML+=`<div class="si"><div class="si-em">${d.emoji}</div><div class="si-info"><div class="si-name">${d.name}</div><div class="si-desc">${d.special}</div></div><button class="si-btn si-default">Free</button></div>`;});
+  Object.entries(UNLOCK_PRICES).forEach(([type,price])=>{
+    const d=TD[type],owned=SAVE.unlocked.includes(type),can=SAVE.rd>=price;
+    const btn=owned?`<button class="si-btn si-owned">✓ Owned</button>`:`<button class="si-btn si-buy${can?'':' si-poor'}" onclick="buyTower('${type}',${price})"${can?'':' disabled'}>💧 ${price.toLocaleString()}</button>`;
+    c.innerHTML+=`<div class="si"><div class="si-em">${d.emoji}</div><div class="si-info"><div class="si-name">${d.name}</div><div class="si-desc">${d.special}</div></div>${btn}</div>`;
+  });
+}
+function showLobby(earned=null){
+  document.getElementById('lobbyOverlay').style.display='flex';
+  document.getElementById('endOverlay').style.display='none';
+  document.getElementById('lobbyDropsVal').textContent=SAVE.rd.toLocaleString();
+  const ea=document.getElementById('lobbyEarned');
+  if(earned!=null){ea.textContent='💧 +'+earned.toLocaleString()+' raindrops earned!';ea.style.display='block';}else{ea.style.display='none';}
+  document.getElementById('towerShopPanel').style.display='none';
+  document.getElementById('lobbyMain').style.display='block';
+}
+function showTowerShopPanel(){document.getElementById('lobbyMain').style.display='none';document.getElementById('towerShopPanel').style.display='block';buildLobbyShop();}
+function hideTowerShopPanel(){document.getElementById('towerShopPanel').style.display='none';document.getElementById('lobbyMain').style.display='block';}
+function startFromLobby(){document.getElementById('lobbyOverlay').style.display='none';G.status='between';buildShop();updateUI();}
+function goToLobby(){restartGame();showLobby(_lastRdEarned);}
+
 function showEnd(title,msg,col){
-  const ov=document.getElementById('endOverlay');
+  const earned=awardRaindrops();
   document.getElementById('endTitle').textContent=title;document.getElementById('endTitle').style.color=col;
-  document.getElementById('endMsg').textContent=msg;ov.style.display='flex';
+  document.getElementById('endMsg').textContent=msg;
+  const rd=document.getElementById('endRd');rd.textContent='💧 +'+earned.toLocaleString()+' raindrops earned!';rd.style.display='block';
+  document.getElementById('endOverlay').style.display='flex';
 }
 function buildShop(){
-  const shop=document.getElementById('shop');
-  for(const k of TKEYS){const d=TD[k];const btn=document.createElement('button');btn.className='tbtn';btn.dataset.type=k;btn.innerHTML=`<span class="tico">${d.emoji}</span><div class="tinfo"><div class="tname">${d.name}</div><div class="tcost">$${d.cost}</div><div class="tspec">${d.special}</div></div>`;btn.onclick=()=>selectType(k);shop.appendChild(btn)}
+  const shop=document.getElementById('shop');shop.innerHTML='<h3>💀 Alice Armory</h3>';
+  const available=TKEYS.filter(k=>SAVE.unlocked.includes(k));
+  for(const k of available){const d=TD[k];const btn=document.createElement('button');btn.className='tbtn';btn.dataset.type=k;btn.innerHTML=`<span class="tico">${d.emoji}</span><div class="tinfo"><div class="tname">${d.name}</div><div class="tcost">$${d.cost}</div><div class="tspec">${d.special}</div></div>`;btn.onclick=()=>selectType(k);shop.appendChild(btn)}
 }
 function selectType(type){
   const d=TD[type];
@@ -864,6 +987,42 @@ function toggleSpeed(){G.speed=G.speed===1?2:G.speed===2?3:G.speed===3?4:G.speed
 function toggleAdmin(){document.getElementById('adminPanel').classList.toggle('open')}
 function giveAdminMoney(){const inp=document.getElementById('adminInput');const amt=parseInt(inp.value);if(!amt||amt<=0)return;G.money+=amt;updateUI();inp.value=''}
 function addMoney(amt){G.money+=amt;updateUI()}
+let _adminUnlocked=false;
+function toggleLobbyAdmin(){
+  const p=document.getElementById('lobbyAdminPanel');
+  p.classList.toggle('open');
+  if(!p.classList.contains('open'))return;
+  // Reset to locked state on open
+  if(!_adminUnlocked){
+    document.getElementById('adminPwInput').style.display='block';
+    document.getElementById('adminRdInput').style.display='none';
+    document.getElementById('adminRdGive').style.display='none';
+    document.getElementById('adminUnlockMsg').style.display='none';
+    setTimeout(()=>document.getElementById('adminPwInput').focus(),50);
+  }
+}
+function checkAdminPw(){
+  const pw=document.getElementById('adminPwInput').value;
+  if(pw==='finnshows'){
+    _adminUnlocked=true;
+    document.getElementById('adminPwInput').style.display='none';
+    document.getElementById('adminRdInput').style.display='block';
+    document.getElementById('adminRdGive').style.display='block';
+    document.getElementById('adminUnlockMsg').style.display='block';
+    setTimeout(()=>document.getElementById('adminRdInput').focus(),50);
+  }else{
+    document.getElementById('adminPwInput').value='';
+    document.getElementById('adminPwInput').placeholder='wrong password...';
+    setTimeout(()=>document.getElementById('adminPwInput').placeholder='password',1500);
+  }
+}
+function giveAdminRd(){
+  const inp=document.getElementById('adminRdInput');
+  const amt=parseInt(inp.value);if(!amt||amt<=0)return;
+  SAVE.rd+=amt;writeSave(SAVE);
+  document.getElementById('lobbyDropsVal').textContent=SAVE.rd.toLocaleString();
+  buildLobbyShop();inp.value='';
+}
 function togglePause(){
   if(G.status==='gameover'||G.status==='start')return;
   G.paused=!G.paused;
@@ -871,9 +1030,9 @@ function togglePause(){
   btn.textContent=G.paused?'▶ Resume':'⏸ Pause';
   btn.classList.toggle('active',G.paused);
 }
-function closeStartOverlay(){document.getElementById('startOverlay').style.display='none';G.status='between'}
+function closeStartOverlay(){G.status='between'}
 function restartGame(){
-  G={money:200,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
+  G={money:250,lives:100,wave:0,score:0,status:'between',speed:1,paused:false,towers:[],bloons:[],projs:[],parts:[],floats:[],spikes:[],lightnings:[],souls:[],villageBoosted:new Set(),selTower:null,placing:null,waveActive:false,waveQueue:[],nid:1,bid:1,autoTimer:0};
   document.getElementById('endOverlay').style.display='none';
   document.getElementById('infoPanel').style.display='none';
   document.getElementById('waveBtn').disabled=false;
@@ -883,7 +1042,7 @@ function restartGame(){
   document.getElementById('pauseBtn').classList.remove('active');
   document.getElementById('wVal').textContent='Wave 0';
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('sel'));
-  updateUI();
+  buildShop();updateUI();
 }
 
 // ── INPUTS ─────────────────────────────────────────────
@@ -916,7 +1075,9 @@ document.addEventListener('keydown',e=>{
   document.body.style.cursor=`url(${url}) 16 16, auto`;
 })();
 
-buildPath();buildShop();buildGrassDots();updateUI();
+buildPath();buildGrassDots();updateUI();
+// Show lobby on first load
+showLobby();
 function loop(){tickAutoWave();tick();render();requestAnimationFrame(loop)}
 loop();
 </script>
